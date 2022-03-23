@@ -60,17 +60,14 @@ class Page(object):
     @cached_property
     def meta(self):
         """Store a dict of metadata parsed from the YAML header of the file."""
-        # meta = yaml.safe_load(self._meta)
-        meta = {}
-        for doc in yaml.safe_load_all(StringIO(self._meta)):
-            if doc is not None:
-                meta.update(doc)
+        meta = yaml.safe_load_all(self._meta)
         # YAML documents can be any type but we want a dict
         # eg. yaml.safe_load('') -> None
         #     yaml.safe_load('- 1\n- a') -> [1, 'a']
-        if not meta:
+        meta_dict = list(meta)[0]
+        if not meta_dict:
             return {}
-        if not isinstance(meta, dict):
+        if not isinstance(meta_dict, dict):
             raise ValueError("Expected a dict in metadata for '{0}', got {1}".
-                             format(self.path, type(meta).__name__))
-        return meta
+                             format(self.path, type(meta_dict).__name__))
+        return meta_dict
